@@ -4,6 +4,7 @@ import typing
 import fastapi
 import sqlalchemy
 from sqlalchemy import orm
+from sqlalchemy import pool
 from sqlalchemy.ext import asyncio as sql_async
 
 from backend import config
@@ -11,7 +12,7 @@ from backend import config
 settings = config.get_settings()
 
 DATABASE_URL = settings.db_url
-engine = sql_async.create_async_engine(DATABASE_URL)
+engine = sql_async.create_async_engine(DATABASE_URL, poolclass=pool.NullPool)
 async_session_maker = sql_async.async_sessionmaker(engine)
 
 

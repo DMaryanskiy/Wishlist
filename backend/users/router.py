@@ -18,7 +18,7 @@ async def register_user(user_data: schemas.UserRegistration, session: db.Session
         raise exceptions.UserAlreadyExistsException
     
     if user_data.password != user_data.password_check:
-        raise exceptions.PasswordMismatchException('Пароли не совпадают')
+        raise exceptions.PasswordMismatchException
     
     user_create = user_data.model_dump()
     hashed_password = auth.get_password_hash(user_data.password)
