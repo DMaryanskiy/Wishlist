@@ -1,21 +1,26 @@
 import datetime as dt
 import typing
 
+import fastapi
 import sqlalchemy
 from sqlalchemy import orm
 from sqlalchemy.ext import asyncio as sql_async
 
-DATABASE_URL = 'postgresql+asyncpg://localhost/wishlist'
+from backend import config
+
+settings = config.get_settings()
+
+DATABASE_URL = settings.db_url
 engine = sql_async.create_async_engine(DATABASE_URL)
 async_session_maker = sql_async.async_sessionmaker(engine)
 
 
-def get_database() -> typing.Generator:
-    db = async_session_maker()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_session():
+    async_session = async_session_maker
+    async with async_session() as session:
+        yield session
+
+SessionDep = typing.Annotated[sql_async.AsyncSession, fastapi.Depends(get_session)]
 
 
 class Base(sql_async.AsyncAttrs, orm.DeclarativeBase):
