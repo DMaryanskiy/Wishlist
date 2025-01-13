@@ -13,3 +13,9 @@ class UserRegistration(UserBase):
 
 class UserRegistrationInternal(UserBase):
     hashed_password: str = pydantic.Field(..., description='Захешированный пароль')
+
+
+# -------------- token --------------
+class Token(pydantic.BaseModel):
+    access_token: str
+    token_type: str
