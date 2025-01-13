@@ -20,6 +20,7 @@ async def get_session():
     async_session = async_session_maker
     async with async_session() as session:
         yield session
+    await session.close()
 
 SessionDep = typing.Annotated[sql_async.AsyncSession, fastapi.Depends(get_session)]
 

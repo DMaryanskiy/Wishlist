@@ -9,7 +9,7 @@ from backend.users import auth
 
 
 @pytest.mark.asyncio
-async def test_ok_login():
+async def test_ok_login(db: async_sql.AsyncSession):
     # I need to remember raw password
     email = conftest.fake.email()
     password = conftest.fake.password()
@@ -32,6 +32,8 @@ async def test_ok_login():
 
     assert 'refresh_token' in cookies.keys()
 
+    await helpers.delete_fake_user(db, email)
+
 
 @pytest.mark.asyncio
 async def test_wrong_password(db: async_sql.AsyncSession):
@@ -47,6 +49,8 @@ async def test_wrong_password(db: async_sql.AsyncSession):
 
     assert data == {'detail': 'Неверная почта или пароль!'}
 
+    await helpers.delete_fake_user(db, user.email)
+
 
 @pytest.mark.asyncio
 async def test_ok_refresh(db: async_sql.AsyncSession):
@@ -58,6 +62,8 @@ async def test_ok_refresh(db: async_sql.AsyncSession):
         })
     
     assert response.status_code == 200
+
+    await helpers.delete_fake_user(db, user.email)
 
 
 @pytest.mark.asyncio
