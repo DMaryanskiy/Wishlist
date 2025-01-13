@@ -17,3 +17,7 @@ async def create_user(db: async_sql.AsyncSession) -> models.Users:
     await db.refresh(_user, ['updated_at'])
 
     return _user
+
+
+async def delete_fake_user(db: async_sql.AsyncSession, email: str) -> None:
+    await models.user_crud.db_delete(db, allow_multiple=False, email=email)
