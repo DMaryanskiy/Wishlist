@@ -2,6 +2,7 @@ import datetime as dt
 import typing as tp
 
 import jose
+from fastapi import security
 from jose import jwt
 from passlib import context
 
@@ -12,6 +13,8 @@ from backend.users import models
 settings = config.get_settings()
 
 PWD_CONTEXT = context.CryptContext(schemes=['bcrypt'], deprecated='auto')
+
+oauth2_scheme = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def get_password_hash(password: str) -> str:

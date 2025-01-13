@@ -5,6 +5,7 @@ from fastapi import security
 
 from backend import config
 from backend import database as db
+from backend import dependencies
 from backend import exceptions
 from backend.users import auth
 from backend.users import models
@@ -67,3 +68,8 @@ async def refresh_access_token(request: fastapi.Request, db: db.SessionDep) -> d
     new_access_token = await auth.create_tokens({'sub': email})
 
     return {'access_token': new_access_token, 'token_type': 'bearer'}
+
+
+@ROUTER.get('/me', response_model=schemas.UserBase)
+async def get_myself(current_user: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)]):
+    return current_user
