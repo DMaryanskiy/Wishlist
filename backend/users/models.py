@@ -1,3 +1,4 @@
+import fastcrud
 import sqlalchemy as sqlalc
 from sqlalchemy import orm
 
@@ -11,3 +12,5 @@ class Users(db.Base):
     name: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=False)
     hashed_password: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=False)
     email: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=False, unique=True)
+
+user_crud: fastcrud.FastCRUD = fastcrud.FastCRUD(Users)

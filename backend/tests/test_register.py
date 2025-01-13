@@ -55,4 +55,4 @@ async def test_user_already_exists(db: async_sql.AsyncSession):
     assert response.status_code == 409
     data = response.json()
 
-    assert data == {'detail': 'Пользователь уже существует'}
+    assert data == {'detail': 'Пользователь уже существует!'}
