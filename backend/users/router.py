@@ -73,3 +73,33 @@ async def refresh_access_token(request: fastapi.Request, db: db.SessionDep) -> d
 @ROUTER.get('/me', response_model=schemas.UserBase)
 async def get_myself(current_user: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)]):
     return current_user
+
+
+@ROUTER.post('/me/edit', response_model=schemas.UserEditBase, status_code=fastapi.status.HTTP_201_CREATED)
+async def edit_myself(
+    edit_body: schemas.UserEdit,
+    current_user: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)],
+    db: db.SessionDep,
+    response: fastapi.Response,
+):
+    if edit_body.email:
+        user = await models.user_crud.exists(db, email=edit_body.email)
+        if user:
+            raise exceptions.UserAlreadyExistsException
+
+    edit_data = edit_body.model_dump(exclude_none=True)
+    
+    if edit_body.password:
+        hashed_password = auth.get_password_hash(edit_body.password)
+        edit_data['hashed_password'] = hashed_password
+        del edit_data['password']
+
+    await models.user_crud.update(db, edit_data, email=current_user.email)
+
+    if 'email' in edit_data:
+        refresh_token = await auth.create_tokens({'sub': edit_body.email}, 'refresh')
+        max_age = settings.refresh_token_expire_days * 24 * 60 * 60
+
+        response.set_cookie('refresh_token', refresh_token, httponly=True, secure=True, samesite='lax', max_age=max_age)
+
+    return schemas.UserEditBase(**edit_data)

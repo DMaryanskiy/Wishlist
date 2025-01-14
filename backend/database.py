@@ -5,6 +5,7 @@ import fastapi
 import sqlalchemy
 from sqlalchemy import orm
 from sqlalchemy import pool
+from sqlalchemy import types
 from sqlalchemy.ext import asyncio as sql_async
 
 from backend import config
@@ -27,4 +28,4 @@ SessionDep = typing.Annotated[sql_async.AsyncSession, fastapi.Depends(get_sessio
 
 class Base(sql_async.AsyncAttrs, orm.DeclarativeBase):
     created_at: orm.Mapped[dt.datetime] = orm.mapped_column(server_default=sqlalchemy.func.now())
-    updated_at: orm.Mapped[dt.datetime] = orm.mapped_column(server_default=sqlalchemy.func.now(), onupdate=sqlalchemy.func.now())
+    updated_at: orm.Mapped[dt.datetime] = orm.mapped_column(server_default=sqlalchemy.func.now(), onupdate=sqlalchemy.func.now(), type_=types.TIMESTAMP(timezone=True))
