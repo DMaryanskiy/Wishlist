@@ -13,3 +13,5 @@ RefreshTokenMissingException = fastapi.HTTPException(status_code=status.HTTP_401
 
 UserAlreadyDeletedException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Пользователь был удален!')
+
+InvalidTokenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Некорректный токен или он отсутствует!')
