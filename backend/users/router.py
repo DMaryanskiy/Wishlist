@@ -1,6 +1,7 @@
 import typing as tp
 
 import fastapi
+import jose
 from fastapi import security
 
 from backend import config
@@ -68,6 +69,16 @@ async def refresh_access_token(request: fastapi.Request, db: db.SessionDep) -> d
     new_access_token = await auth.create_tokens({'sub': email})
 
     return {'access_token': new_access_token, 'token_type': 'bearer'}
+
+
+@ROUTER.post('/logout')
+async def logout_user(response: fastapi.Response, _: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)]):
+    try:
+        response.delete_cookie('refresh_token')
+
+        return {'message': 'Токен был успешно удален!'}
+    except jose.JWTError:
+        raise exceptions.InvalidTokenException
 
 
 @ROUTER.get('/me', response_model=schemas.UserBase)
