@@ -6,18 +6,19 @@ from backend import database as db
 from backend import exceptions
 from backend.users import auth
 from backend.users import models
+from backend.users import schemas
 
 
 async def get_current_user(
     token: tp.Annotated[str, fastapi.Depends(auth.oauth2_scheme)],
     db: db.SessionDep
-) -> dict[str, str]:
+) -> schemas.UserBase:
     email = await auth.verify_token(token, db)
     if not email:
         raise exceptions.RefreshTokenMissingException
     
     user: dict[str, str] | None = await models.user_crud.get(db, email=email, is_deleted=False)
     if user:
-        return user
+        return schemas.UserBase(**user)
     
     raise exceptions.UserAlreadyDeletedException
