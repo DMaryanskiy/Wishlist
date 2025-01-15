@@ -25,6 +25,17 @@ async def subscribe(user_id: int, current_user: dependencies.CurrentUserDep, db:
     return subscription_create
 
 
+@ROUTER.delete('/{user_id}', status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def unsubscribe(user_id: int, current_user: dependencies.CurrentUserDep, db: db.SessionDep):
+    subscription = await models.subscriptions_crud.exists(db, subscriber=current_user.id, subscription=user_id)
+    if not subscription:
+        raise exceptions.SubscriptionDoesNotExistException
+    
+    await models.subscriptions_crud.db_delete(db, subscriber=current_user.id, subscription=user_id)
+
+    return {'message': 'Подписка удалена!'}
+
+
 @ROUTER.get('/{user_id}/get/subscribers', response_model=list[user_schemas.UserBase])
 async def get_subscribers(user_id: int, db: db.SessionDep):
     subscribers_ids_raw = await models.subscriptions_crud.get_multi(
