@@ -8,6 +8,9 @@ UserAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_C
 SubscriptionAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Подписка уже существует!')
 
+SubscriptionDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                           detail='Подписки не существует!')
+
 PasswordMismatchException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Пароли не совпадают!')
 
 UnauthorizedException = fastapi.HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Неверная почта или пароль!')
