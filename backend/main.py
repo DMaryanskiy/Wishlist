@@ -1,6 +1,7 @@
 import fastapi
 from fastapi.middleware import cors
 
+from backend.subscriptions import router as subscription_router
 from backend.users import router as user_router
 
 app = fastapi.FastAPI()
@@ -15,5 +16,6 @@ app.add_middleware(
 
 api_router = fastapi.APIRouter(prefix='/api/v1')
 api_router.include_router(user_router.ROUTER)
+api_router.include_router(subscription_router.ROUTER)
 
 app.include_router(api_router)

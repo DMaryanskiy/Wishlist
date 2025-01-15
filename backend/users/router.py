@@ -72,7 +72,7 @@ async def refresh_access_token(request: fastapi.Request, db: db.SessionDep) -> d
 
 
 @ROUTER.post('/logout')
-async def logout_user(response: fastapi.Response, _: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)]):
+async def logout_user(response: fastapi.Response, _: dependencies.CurrentUserDep):
     try:
         response.delete_cookie('refresh_token')
 
@@ -82,14 +82,14 @@ async def logout_user(response: fastapi.Response, _: tp.Annotated[schemas.UserBa
 
 
 @ROUTER.get('/me', response_model=schemas.UserBase)
-async def get_myself(current_user: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)]):
+async def get_myself(current_user: dependencies.CurrentUserDep):
     return current_user
 
 
 @ROUTER.post('/me/edit', response_model=schemas.UserEditBase, status_code=fastapi.status.HTTP_201_CREATED)
 async def edit_myself(
     edit_body: schemas.UserEdit,
-    current_user: tp.Annotated[schemas.UserBase, fastapi.Depends(dependencies.get_current_user)],
+    current_user: dependencies.CurrentUserDep,
     db: db.SessionDep,
     response: fastapi.Response,
 ):
