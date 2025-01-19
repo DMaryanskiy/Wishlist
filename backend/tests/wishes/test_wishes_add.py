@@ -28,8 +28,11 @@ async def test_ok(db: async_sql.AsyncSession):
     data = response.json()
 
     assert data == {
-        'user': user.name,
+        'user': user.email,
+        'link': '',
         'name': 'New wish',
+        'description': '',
+        'image': '',
     }
 
     await helpers.delete_fake_user(db, user.email)
