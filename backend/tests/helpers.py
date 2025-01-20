@@ -40,6 +40,9 @@ async def create_subscription(db: async_sql.AsyncSession) -> subscr_models.Subsc
 async def create_wish(db: async_sql.AsyncSession, user_id: int) -> wishes_models.Wishes:
     _wish = wishes_models.Wishes(
         name=conftest.fake.name(),
+        description='',
+        link='',
+        image='',
         user=user_id,
     )
 

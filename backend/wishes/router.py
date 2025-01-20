@@ -54,3 +54,34 @@ async def delete_wish(
     await models.wishes_crud.db_delete(db, id=wish_id)
 
     return {'message': 'Желание удалено!'}
+
+
+@ROUTER.get('/by_substring', response_model=list[schemas.WishesBase])
+async def get_wishes_by_substring(
+    db: db.SessionDep,
+    substring: str = '',
+):
+    if not substring:
+        return []
+    
+    wishes = await models.wishes_crud.get_multi(
+        db,
+        name__like=f'%{substring}%',
+        return_as_model=True,
+        schema_to_select=schemas.WishesBase,
+    )
+    return wishes['data']
+
+
+@ROUTER.get('/{user_id}', response_model=list[schemas.WishesBase])
+async def get_wishes_by_user(
+    user_id: int,
+    db: db.SessionDep,
+):
+    wishes = await models.wishes_crud.get_multi(
+        db,
+        user=user_id,
+        return_as_model=True,
+        schema_to_select=schemas.WishesBase,
+    )
+    return wishes['data']
