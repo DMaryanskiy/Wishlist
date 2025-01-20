@@ -86,7 +86,7 @@ async def get_myself(current_user: dependencies.CurrentUserDep):
     return current_user
 
 
-@ROUTER.post('/me/edit', response_model=schemas.UserEditBase, status_code=fastapi.status.HTTP_201_CREATED)
+@ROUTER.put('/me/edit', response_model=schemas.UserEditBase, status_code=fastapi.status.HTTP_201_CREATED)
 async def edit_myself(
     edit_body: schemas.UserEdit,
     current_user: dependencies.CurrentUserDep,
