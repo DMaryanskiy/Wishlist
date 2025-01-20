@@ -21,3 +21,5 @@ UserAlreadyDeletedException = fastapi.HTTPException(status_code=status.HTTP_409_
                                            detail='Пользователь был удален!')
 
 InvalidTokenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Некорректный токен или он отсутствует!')
+
+EditForbiddenException = fastapi.HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Изменение не своего желания запрещено!')

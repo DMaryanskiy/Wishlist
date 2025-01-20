@@ -19,7 +19,7 @@ async def test_ok_edit(db: async_sql.AsyncSession):
     email = conftest.fake.email()
     name = conftest.fake.name()
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=main.app), base_url='http://localhost') as ac:
-        response = await ac.post(
+        response = await ac.put(
             '/api/v1/auth/me/edit',
             headers={
                 'Authorization': f'Bearer {refresh_token}',
@@ -60,7 +60,7 @@ async def test_edit_already_exists(db: async_sql.AsyncSession):
     refresh_token = await auth.create_tokens({'sub': user.email}, 'refresh')
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=main.app), base_url='http://localhost') as ac:
-        response = await ac.post(
+        response = await ac.put(
             '/api/v1/auth/me/edit',
             headers={
                 'Authorization': f'Bearer {refresh_token}',
