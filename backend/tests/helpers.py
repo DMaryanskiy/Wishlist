@@ -1,5 +1,6 @@
 from sqlalchemy.ext import asyncio as async_sql
 
+from backend.categories import models as categories_models
 from backend.subscriptions import models as subscr_models
 from backend.users import models as user_models
 from backend.wishes import models as wishes_models
@@ -51,6 +52,19 @@ async def create_wish(db: async_sql.AsyncSession, user_id: int) -> wishes_models
     await db.refresh(_wish, ['updated_at'])
 
     return _wish
+
+
+async def create_user_category(db: async_sql.AsyncSession, user_id: int) -> categories_models.UserCategories:
+    _category = categories_models.UserCategories(
+        name=conftest.fake.name(),
+        user=user_id,
+    )
+
+    db.add(_category)
+    await db.commit()
+    await db.refresh(_category, ['updated_at'])
+
+    return _category
 
 
 async def delete_fake_user(db: async_sql.AsyncSession, email: str) -> None:
