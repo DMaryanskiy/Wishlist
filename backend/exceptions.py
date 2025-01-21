@@ -14,6 +14,9 @@ CategoryAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_4
 BindAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Желание уже привязано к этой категории!')
 
+BindDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                           detail='Желание уже отвязано от этой категории!')
+
 SubscriptionDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Подписки не существует!')
 
@@ -29,3 +32,5 @@ UserAlreadyDeletedException = fastapi.HTTPException(status_code=status.HTTP_409_
 InvalidTokenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Некорректный токен или он отсутствует!')
 
 EditForbiddenException = fastapi.HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Изменение не своего желания или категории запрещено!')
+
+QueryMissedException = fastapi.HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Отсутствуют некоторые квери параметры!')
