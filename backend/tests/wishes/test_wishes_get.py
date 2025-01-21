@@ -58,7 +58,7 @@ async def test_ok_by_empty_subsrtring(db: async_sql.AsyncSession):
 
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=main.app), base_url='http://localhost') as ac:
         response = await ac.get(
-            f'/api/v1/wishes/by_substring',
+            '/api/v1/wishes/by_substring',
         )
     
     assert response.status_code == 200

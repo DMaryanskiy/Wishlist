@@ -11,6 +11,9 @@ SubscriptionAlreadyExistsException = fastapi.HTTPException(status_code=status.HT
 CategoryAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Категория уже существует!')
 
+BindAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                           detail='Желание уже привязано к этой категории!')
+
 SubscriptionDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Подписки не существует!')
 

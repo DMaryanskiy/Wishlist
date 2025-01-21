@@ -5,6 +5,8 @@ from backend import dependencies
 from backend import exceptions
 from backend.categories import models
 from backend.categories import schemas
+from backend.wishes import models as wish_models
+from backend.wishes import schemas as wish_schemas
 
 ROUTER = fastapi.APIRouter(prefix='/categories', tags=['Categories'])
 
@@ -57,3 +59,36 @@ async def delete_category(
     await models.user_categories_crud.db_delete(db, category_id=category_id)
 
     return {'message': 'Категория удалена!'}
+
+
+@ROUTER.post('/bind', response_model=schemas.CategoryBind, status_code=fastapi.status.HTTP_201_CREATED)
+async def bind_wish(
+    bind_data: schemas.CategoryBind,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    bind = await models.wish_categories_crud.exists(db, category_id=bind_data.category_id, wish=bind_data.wish)
+    if bind:
+        raise exceptions.BindAlreadyExistsException
+
+    current_category: schemas.CategoryCreate = await models.user_categories_crud.get(
+        db,
+        schema_to_select=schemas.CategoryCreate,
+        return_as_model=True,
+        category_id=bind_data.category_id,
+    )
+    if current_category.user != current_user.id:
+        raise exceptions.EditForbiddenException
+    
+    current_wish: wish_schemas.WishesCreate = await wish_models.wishes_crud.get(
+        db,
+        schema_to_select=wish_schemas.WishesCreate,
+        return_as_model=True,
+        id=bind_data.wish,
+    )
+    if current_wish.user != current_user.id:
+        raise exceptions.EditForbiddenException
+    
+    await models.wish_categories_crud.create(db, bind_data)
+
+    return bind_data
