@@ -7,3 +7,8 @@ class CategoryBase(pydantic.BaseModel):
 
 class CategoryCreate(CategoryBase):
     user: int
+
+
+class CategoryBind(pydantic.BaseModel):
+    category_id: int
+    wish: int

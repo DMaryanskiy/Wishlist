@@ -1,5 +1,3 @@
-import typing as tp
-
 import fastapi
 
 from backend import database as db
