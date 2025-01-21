@@ -7,9 +7,10 @@ from backend import database as db
 
 class UserCategories(db.Base):
     __tablename__ = 'user_categories'
+    __table_args__ = (sqlalc.UniqueConstraint('category_id', 'name', name='uix_name_category'),)
 
     category_id: orm.Mapped[int] = orm.mapped_column(sqlalc.Integer, primary_key=True, autoincrement=True)
-    name: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=False, unique=True)
+    name: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=False)
 
     user: orm.Mapped[int] = orm.mapped_column(sqlalc.Integer, sqlalc.ForeignKey('users.id', ondelete='CASCADE'))
 

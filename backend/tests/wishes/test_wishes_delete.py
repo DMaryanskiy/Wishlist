@@ -44,4 +44,4 @@ async def test_forbidden(db: async_sql.AsyncSession):
     assert response.status_code == 403
     data = response.json()
 
-    assert data == {'detail': 'Изменение не своего желания запрещено!'}
+    assert data == {'detail': 'Изменение не своего желания или категории запрещено!'}
