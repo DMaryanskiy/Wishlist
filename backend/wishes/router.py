@@ -3,6 +3,8 @@ import fastapi
 from backend import database as db
 from backend import dependencies
 from backend import exceptions
+from backend.categories import models as cat_models
+from backend.categories import schemas as cat_schemas
 from backend.wishes import models
 from backend.wishes import schemas
 
@@ -67,6 +69,39 @@ async def get_wishes_by_substring(
     wishes = await models.wishes_crud.get_multi(
         db,
         name__like=f'%{substring}%',
+        return_as_model=True,
+        schema_to_select=schemas.WishesBase,
+    )
+    return wishes['data']
+
+
+@ROUTER.get('/by_category/{name}', response_model=list[schemas.WishesBase])
+async def get_wishes_by_category(
+    name: str,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    user_category: cat_schemas.CategoryEnhanced = await cat_models.user_categories_crud.get(
+        db,
+        return_as_model=True,
+        schema_to_select=cat_schemas.CategoryEnhanced,
+        name=name,
+        user=current_user.id
+    )
+
+    wishes_ids_raw = await cat_models.wish_categories_crud.get_multi(
+        db,
+        return_as_model=True,
+        schema_to_select=cat_schemas.WishId,
+        category_id=user_category.category_id,
+    )
+
+    wishes_ids: list[cat_schemas.WishId] = wishes_ids_raw['data']
+    wishes_ids = [obj.wish for obj in wishes_ids]
+
+    wishes = await models.wishes_crud.get_multi(
+        db,
+        id__in=wishes_ids,
         return_as_model=True,
         schema_to_select=schemas.WishesBase,
     )
