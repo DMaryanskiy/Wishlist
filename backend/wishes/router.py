@@ -145,7 +145,7 @@ async def reserve_wishes(
 
 
 @ROUTER.delete('/{wish_id}/reserve', status_code=fastapi.status.HTTP_204_NO_CONTENT)
-async def reserve_wishes(
+async def unreserve_wishes(
     wish_id: int,
     current_user: dependencies.CurrentUserDep,
     db: db.SessionDep,
@@ -156,3 +156,24 @@ async def reserve_wishes(
     
     await models.reserved_wishes_crud.db_delete(db, wish=wish_id)
     await models.wishes_crud.update(db, {'reserved': False}, id=wish_id)
+
+
+@ROUTER.get('/get/reserved', response_model=list[schemas.WishesBase])
+async def get_reserved_wishes(
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    reserved_wishes: dict[str, list[schemas.WishesReserve]] = await models.reserved_wishes_crud.get_multi(
+        db,
+        schema_to_select=schemas.WishesReserve,
+        return_as_model=True,
+        user=current_user.id,
+    )
+    ids = [res.wish for res in reserved_wishes['data']]
+    wishes = await models.wishes_crud.get_multi(
+        db,
+        schema_to_select=schemas.WishesBase,
+        return_as_model=True,
+        id__in=ids,
+    )
+    return wishes['data']
