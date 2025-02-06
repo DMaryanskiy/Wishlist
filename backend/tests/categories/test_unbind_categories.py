@@ -85,6 +85,9 @@ async def test_forbidden_category(db: async_sql.AsyncSession):
 
     assert data == {'detail': 'Изменение не своего желания или категории запрещено!'}
 
+    await helpers.delete_fake_user(db, user_creator.email)
+    await helpers.delete_fake_user(db, user_editor.email)
+
 
 @pytest.mark.asyncio
 async def test_forbidden_wish(db: async_sql.AsyncSession):
@@ -113,6 +116,9 @@ async def test_forbidden_wish(db: async_sql.AsyncSession):
     data = response.json()
 
     assert data == {'detail': 'Изменение не своего желания или категории запрещено!'}
+
+    await helpers.delete_fake_user(db, user_creator.email)
+    await helpers.delete_fake_user(db, user_editor.email)
 
 
 @pytest.mark.asyncio
