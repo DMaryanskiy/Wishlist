@@ -17,6 +17,9 @@ BindAlreadyExistsException = fastapi.HTTPException(status_code=status.HTTP_409_C
 BindDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Желание уже отвязано от этой категории!')
 
+WishDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                           detail='Желание не существует!')
+
 SubscriptionDoesNotExistException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT,
                                            detail='Подписки не существует!')
 

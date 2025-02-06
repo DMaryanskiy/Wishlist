@@ -13,7 +13,8 @@ class Wishes(db.Base):
     link: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=True)
     description: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=True)
     image: orm.Mapped[str] = orm.mapped_column(sqlalc.String, nullable=True)
-    reserved: orm.Mapped[bool] = orm.mapped_column(sqlalc.Boolean, nullable=True)
+    is_secret: orm.Mapped[bool] = orm.mapped_column(sqlalc.Boolean, nullable=True, default=False)
+    is_gifted: orm.Mapped[bool] = orm.mapped_column(sqlalc.Boolean, nullable=True, default=False)
 
     user: orm.Mapped[int] = orm.mapped_column(sqlalc.Integer, sqlalc.ForeignKey('users.id', ondelete='CASCADE'))
 

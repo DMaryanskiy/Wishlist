@@ -32,6 +32,7 @@ async def test_ok(db: async_sql.AsyncSession):
     }
 
     await helpers.delete_fake_user(db, user.email)
+    await helpers.delete_fake_user(db, wish_creator.email)
 
 
 @pytest.mark.asyncio
@@ -78,5 +79,26 @@ async def test_already_reserved(db: async_sql.AsyncSession):
     data = response.json()
 
     assert data == {'detail': 'Желание уже было зарезервировано!'}
+
+    await helpers.delete_fake_user(db, user.email)
+    await helpers.delete_fake_user(db, wish_creator.email)
+
+
+@pytest.mark.asyncio
+async def test_wish_not_exists(db: async_sql.AsyncSession):
+    user = await helpers.create_user(db)
+    refresh_token = await auth.create_tokens({'sub': user.email}, 'refresh')
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=main.app), base_url='http://localhost') as ac:
+        response = await ac.post(
+            '/api/v1/wishes/555/reserve',
+            headers={
+                'Authorization': f'Bearer {refresh_token}',
+            },
+        )
+
+    assert response.status_code == 409
+    data = response.json()
+
+    assert data == {'detail': 'Желание не существует!'}
 
     await helpers.delete_fake_user(db, user.email)

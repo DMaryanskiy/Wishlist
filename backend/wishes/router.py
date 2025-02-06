@@ -7,6 +7,7 @@ from backend.categories import models as cat_models
 from backend.categories import schemas as cat_schemas
 from backend.wishes import models
 from backend.wishes import schemas
+from backend.wishes import utils
 
 ROUTER = fastapi.APIRouter(prefix='/wishes', tags=['Wishes'])
 
@@ -118,6 +119,8 @@ async def get_wishes_by_user(
         user=user_id,
         return_as_model=True,
         schema_to_select=schemas.WishesBase,
+        is_secret=False,
+        is_gifted=False,
     )
     return wishes['data']
 
@@ -128,6 +131,10 @@ async def reserve_wishes(
     current_user: dependencies.CurrentUserDep,
     db: db.SessionDep,
 ):
+    wish_exists = await models.wishes_crud.exists(db, id=wish_id)
+    if not wish_exists:
+        raise exceptions.WishDoesNotExistException
+
     is_reserved = await models.reserved_wishes_crud.exists(db, wish=wish_id)
     if is_reserved:
         raise exceptions.WishAlreadyReservedException
@@ -138,7 +145,6 @@ async def reserve_wishes(
 
     reserve_create = schemas.WishesReserve(user=current_user.id, wish=wish_id)
     await models.reserved_wishes_crud.create(db, reserve_create)
-    await models.wishes_crud.update(db, {'reserved': True}, id=wish_id)
 
     reserve_create.user = current_user.email
     return reserve_create
@@ -155,7 +161,6 @@ async def unreserve_wishes(
         raise exceptions.WishNotReservedException
     
     await models.reserved_wishes_crud.db_delete(db, wish=wish_id)
-    await models.wishes_crud.update(db, {'reserved': False}, id=wish_id)
 
 
 @ROUTER.get('/get/reserved', response_model=list[schemas.WishesBase])
@@ -177,3 +182,63 @@ async def get_reserved_wishes(
         id__in=ids,
     )
     return wishes['data']
+
+
+@ROUTER.post('/{wish_id}/secret')
+async def make_wish_secret(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    await utils.is_secret_manager(
+        is_secret=True,
+        wish_id=wish_id,
+        current_user=current_user,
+        db=db,
+    )
+    return {'success': True}
+
+
+@ROUTER.delete('/{wish_id}/secret')
+async def make_wish_public(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    await utils.is_secret_manager(
+        is_secret=False,
+        wish_id=wish_id,
+        current_user=current_user,
+        db=db,
+    )
+    return {'success': True}
+
+
+@ROUTER.post('/{wish_id}/gifted')
+async def make_wish_gifted(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    await utils.is_gifted_manager(
+        is_gifted=True,
+        wish_id=wish_id,
+        current_user=current_user,
+        db=db,
+    )
+    return {'success': True}
+
+
+@ROUTER.delete('/{wish_id}/gifted')
+async def make_wish_ungifted(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    await utils.is_gifted_manager(
+        is_gifted=False,
+        wish_id=wish_id,
+        current_user=current_user,
+        db=db,
+    )
+    return {'success': True}

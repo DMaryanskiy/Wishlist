@@ -39,3 +39,4 @@ async def test_ok(db: async_sql.AsyncSession):
     assert data == [wish.model_dump() for wish in wish_json]
 
     await helpers.delete_fake_user(db, user.email)
+    await helpers.delete_fake_user(db, wish_creator.email)

@@ -108,3 +108,5 @@ async def delete_fake_user(db: async_sql.AsyncSession, email: str) -> None:
 async def delete_fake_subscription(db: async_sql.AsyncSession, subscription: subscr_models.Subscriptions) -> None:
     _user = await user_models.user_crud.get(db, id=subscription.subscriber, is_deleted=False)
     await delete_fake_user(db, _user['email'])
+    _user = await user_models.user_crud.get(db, id=subscription.subscription, is_deleted=False)
+    await delete_fake_user(db, _user['email'])
