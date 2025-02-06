@@ -34,3 +34,7 @@ InvalidTokenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLI
 EditForbiddenException = fastapi.HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Изменение не своего желания или категории запрещено!')
 
 QueryMissedException = fastapi.HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Отсутствуют некоторые квери параметры!')
+
+WishAlreadyReservedException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Желание уже было зарезервировано!')
+
+ReserveForbiddenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Нельзя резервировать свое желание!')

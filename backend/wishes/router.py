@@ -120,3 +120,25 @@ async def get_wishes_by_user(
         schema_to_select=schemas.WishesBase,
     )
     return wishes['data']
+
+
+@ROUTER.post('/{wish_id}/reserve', response_model=schemas.WishesReserve)
+async def reserve_wishes(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    is_reserved = await models.reserved_wishes_crud.exists(db, wish=wish_id)
+    if is_reserved:
+        raise exceptions.WishAlreadyReservedException
+    
+    is_own_wish = await models.wishes_crud.exists(db, id=wish_id, user=current_user.id)
+    if is_own_wish:
+        raise exceptions.ReserveForbiddenException
+
+    reserve_create = schemas.WishesReserve(user=current_user.id, wish=wish_id)
+    await models.reserved_wishes_crud.create(db, reserve_create)
+    await models.wishes_crud.update(db, {'reserved': True}, id=wish_id)
+
+    reserve_create.user = current_user.email
+    return reserve_create
