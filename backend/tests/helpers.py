@@ -84,6 +84,23 @@ async def create_wish_category(
     return _category
 
 
+async def reserve_wish(
+    db: async_sql.AsyncSession,
+    user_id: int,
+    wish_id: int,
+) -> wishes_models.ReservedWishes:
+    _reserve = wishes_models.ReservedWishes(
+        user=user_id,
+        wish=wish_id
+    )
+
+    db.add(_reserve)
+    await db.commit()
+    await db.refresh(_reserve, ['updated_at'])
+
+    return _reserve
+
+
 async def delete_fake_user(db: async_sql.AsyncSession, email: str) -> None:
     await user_models.user_crud.db_delete(db, allow_multiple=False, email=email)
 

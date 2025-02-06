@@ -10,3 +10,8 @@ class WishesBase(pydantic.BaseModel):
 
 class WishesCreate(WishesBase):
     user: int = pydantic.Field(..., description='Пользователь, создавший желание')
+
+
+class WishesReserve(pydantic.BaseModel):
+    user: int = pydantic.Field(..., description='Пользователь, зарезервировавший желание')
+    wish: int = pydantic.Field(..., description='Желание в резерве')
