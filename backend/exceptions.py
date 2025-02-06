@@ -37,4 +37,6 @@ QueryMissedException = fastapi.HTTPException(status_code=status.HTTP_400_BAD_REQ
 
 WishAlreadyReservedException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Желание уже было зарезервировано!')
 
+WishNotReservedException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Желание не зарезервировано или зарезервировано не Вами!')
+
 ReserveForbiddenException = fastapi.HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Нельзя резервировать свое желание!')

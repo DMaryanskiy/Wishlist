@@ -142,3 +142,17 @@ async def reserve_wishes(
 
     reserve_create.user = current_user.email
     return reserve_create
+
+
+@ROUTER.delete('/{wish_id}/reserve', status_code=fastapi.status.HTTP_204_NO_CONTENT)
+async def reserve_wishes(
+    wish_id: int,
+    current_user: dependencies.CurrentUserDep,
+    db: db.SessionDep,
+):
+    is_by_me_reserved = await models.reserved_wishes_crud.exists(db, wish=wish_id, user=current_user.id)
+    if not is_by_me_reserved:
+        raise exceptions.WishNotReservedException
+    
+    await models.reserved_wishes_crud.db_delete(db, wish=wish_id)
+    await models.wishes_crud.update(db, {'reserved': False}, id=wish_id)
